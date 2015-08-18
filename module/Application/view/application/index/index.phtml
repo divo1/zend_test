@@ -1,0 +1,50 @@
+<script>
+function get(amount) {
+	$.get('/item-rest', {amount:amount}, function(d) {
+		var table = $("#table").find('section');
+		table.empty();
+		for(var i in d.data) {
+			items = d.data;
+			var div = $('<a href="#edit/'+items[i].id+'" data-id="'+items[i].id+'"></a>');
+			div.addClass('row');
+			div.append('<div class="col-md-2">'+items[i].id+'</div>');
+			div.append('<div class="col-md-8">'+items[i].name+'</div>');
+			div.append('<div class="col-md-2 text-center">'+items[i].amount+'</div>');
+			table.append(div);
+		}
+	});
+}
+$(function() {
+	$("button").on('click', function() {
+		get($(this).data('amount'));
+	});
+	$('#table section').on('click', 'a', function() {
+		var id = $(this).data('id');
+		var jumbotron = $("#jumbotron");
+		$.get('/item-rest/' + id, function(d) {
+			jumbotron.empty();
+			jumbotron.append("<p>Id: "+d.data.id+"</p>");
+			jumbotron.append("<p>Nazwa: "+d.data.name+"</p>");
+			jumbotron.append("<p>Ilość: "+d.data.amount+"</p>");
+			jumbotron.removeClass("hide").addClass("show");
+		});
+	});
+	get(1);
+});
+</script>
+
+<button type="button" class="btn btn-primary" data-amount="1">Na składzie</button>
+<button type="button" class="btn btn-primary" data-amount="-1">Brak</button>
+<button type="button" class="btn btn-primary" data-amount="5">&gt; 5</button>
+
+<br /><br />
+<div id="table">
+	<header class="row">
+		<div class="col-md-2">id</div>
+		<div class="col-md-8">Nazwa</div>
+		<div class="col-md-2 text-center">Ilość</div>
+	</header>
+	<section class="row"></section>
+</div>
+<br /><br />
+<div id="jumbotron" class="jumbotron hide"></div>
